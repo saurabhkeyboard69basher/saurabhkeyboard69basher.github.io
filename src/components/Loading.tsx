@@ -10,14 +10,18 @@ const Loading = ({ percent }: { percent: number }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [clicked, setClicked] = useState(false);
 
-  if (percent >= 100) {
-    setTimeout(() => {
-      setLoaded(true);
-      setTimeout(() => {
-        setIsLoaded(true);
-      }, 1000);
-    }, 600);
-  }
+  useEffect(() => {
+    if (percent >= 100) {
+      const timer1 = setTimeout(() => {
+        setLoaded(true);
+        const timer2 = setTimeout(() => {
+          setIsLoaded(true);
+        }, 800);
+        return () => clearTimeout(timer2);
+      }, 400);
+      return () => clearTimeout(timer1);
+    }
+  }, [percent]);
 
   useEffect(() => {
     import("./utils/initialFX").then((module) => {
@@ -28,10 +32,10 @@ const Loading = ({ percent }: { percent: number }) => {
             module.initialFX();
           }
           setIsLoading(false);
-        }, 900);
+        }, 700);
       }
     });
-  }, [isLoaded]);
+  }, [isLoaded, setIsLoading]);
 
   function handleMouseMove(e: React.MouseEvent<HTMLElement>) {
     const { currentTarget: target } = e;
@@ -94,41 +98,47 @@ export default Loading;
 
 export const setProgress = (setLoading: (value: number) => void) => {
   let percent: number = 0;
+  let isDone = false;
 
-  let interval = setInterval(() => {
-    if (percent <= 50) {
-      let rand = Math.round(Math.random() * 5);
-      percent = percent + rand;
+  // Smoothly increment up to ~85% in ~1.2s
+  let interval: any = setInterval(() => {
+    if (isDone) return;
+    if (percent < 85) {
+      percent += Math.floor(Math.random() * 3) + 2; // +2 to +4
+      if (percent > 85) percent = 85;
       setLoading(percent);
-    } else {
-      clearInterval(interval);
-      interval = setInterval(() => {
-        percent = percent + Math.round(Math.random());
-        setLoading(percent);
-        if (percent > 91) {
-          clearInterval(interval);
-        }
-      }, 2000);
     }
-  }, 100);
+  }, 35);
+
+  // Fallback safety timeout: if model/assets take longer than 3s, automatically proceed
+  const safetyTimeout = setTimeout(() => {
+    if (!isDone) {
+      loaded();
+    }
+  }, 3000);
 
   function clear() {
+    isDone = true;
+    clearTimeout(safetyTimeout);
     clearInterval(interval);
     setLoading(100);
   }
 
   function loaded() {
+    isDone = true;
+    clearTimeout(safetyTimeout);
+    clearInterval(interval);
     return new Promise<number>((resolve) => {
-      clearInterval(interval);
       interval = setInterval(() => {
         if (percent < 100) {
-          percent++;
+          percent += 2;
+          if (percent > 100) percent = 100;
           setLoading(percent);
         } else {
-          resolve(percent);
           clearInterval(interval);
+          resolve(percent);
         }
-      }, 2);
+      }, 15);
     });
   }
   return { loaded, percent, clear };
