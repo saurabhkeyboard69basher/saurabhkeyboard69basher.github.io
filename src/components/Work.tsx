@@ -58,7 +58,6 @@ const Work = () => {
           scrub: 1,
           pin: true,
           pinSpacing: true,
-          pinType: !ScrollTrigger.isTouch ? "transform" : "fixed",
           id: "work",
           invalidateOnRefresh: true,
         },
