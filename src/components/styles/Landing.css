@@ -179,6 +179,11 @@
   font-family: "Geist", sans-serif;
 }
 
+.landing-intro h1 .split-space {
+  display: inline-block;
+  width: 0.35em;
+}
+
 .landing-native-name {
   margin: 8px 0 0 0;
   font-size: 15px;

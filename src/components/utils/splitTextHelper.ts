@@ -71,10 +71,14 @@ export class SplitText {
 
         lineSpan.appendChild(wordSpan);
 
-        // Preserve spaces between words
+        // Preserve spaces between words with explicit gap
         if (wordIdx < wordsArray.length - 1) {
-          const space = document.createTextNode(" ");
-          lineSpan.appendChild(space);
+          const spaceSpan = document.createElement("span");
+          spaceSpan.className = "split-space";
+          spaceSpan.style.display = "inline-block";
+          spaceSpan.style.width = "0.35em";
+          spaceSpan.innerHTML = "&nbsp;";
+          lineSpan.appendChild(spaceSpan);
         }
       });
 

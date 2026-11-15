@@ -10,9 +10,7 @@ const Landing = ({ children }: PropsWithChildren) => {
           <div className="landing-intro">
             <h2>Hello! I'm</h2>
             <h1>
-              {portfolioData.personal.firstName}
-              <br />
-              <span>{portfolioData.personal.lastName}</span>
+              {portfolioData.personal.firstName} <span>{portfolioData.personal.lastName}</span>
             </h1>
             {portfolioData.personal.nativeName && (
               <p className="landing-native-name">{portfolioData.personal.nativeName}</p>
